@@ -19,7 +19,7 @@ GRAVITY = 10
 DIFFICULTY = "Asia"
 WIND = [False, "Left", 0]
 WATER = False
-TYPHOON = False
+TYPHOON = [False, 0]
 SNOWING = [False, 0]
 EARTHQUAKE = False
 # Tetromino shapes
@@ -242,7 +242,10 @@ class Tetris:
                 del self.grid[i]
                 self.grid.insert(0, [0 for _ in range(self.width)])
         return lines_cleared
-
+    def clear_vertical(self):
+        random_ver = random.randint(0, WIDTH // 25)
+        for i in range(HEIGHT // 25):
+            self.grid[i][random_ver-1] = 0
     def lock_piece(self, piece):
         """Lock the piece in place and create a new piece"""
         for i, row in enumerate(piece.shape[piece.rotation % len(piece.shape)]):
@@ -277,6 +280,7 @@ class Tetris:
 
 
     def update(self):
+        global WIND, SNOWING, TYPHOON, EARTHQUAKE
         """Move the tetromino down one cell"""
         if not self.game_over:
             if self.valid_move(self.current_piece, 0, 1, 0):
@@ -301,6 +305,8 @@ class Tetris:
                             self.current_piece.x += 1
                 WIND[2] += 1
 
+
+            '''Snow Function'''
             if SNOWING[0]:
                 if SNOWING[1] >= 5:
                     SNOWING[1] = 0
@@ -315,6 +321,33 @@ class Tetris:
                         snow.y += 1
                     else:
                         self.lock_snow_piece(snow)
+
+
+            '''Typhoon Function'''
+            if TYPHOON[1] >= 10:
+                TYPHOON[1] = 0
+                TYPHOON[0] = False
+            if TYPHOON[0]:
+                randnum = random.randint(0, 1)
+                if randnum == 0:
+                    randnum = random.randint(0, 1)
+                    if randnum == 0:
+                        if self.current_piece.x >= 1:
+                            self.current_piece.x -= 1
+                else:
+                    randnum = random.randint(0, 1)
+                    if randnum == 0:
+                        if self.valid_move(self.current_piece, 1, 0, 0):
+                            self.current_piece.x += 1
+                TYPHOON[1] += 1
+
+
+            '''EARTHQUAKE Function'''
+            if EARTHQUAKE:
+                for _ in range(2):
+                    self.clear_vertical()
+                EARTHQUAKE = not EARTHQUAKE
+
 
     def draw(self, screen):
         """Draw the grid and the current piece"""
@@ -352,15 +385,17 @@ def draw_game_over(screen, x, y):
 
 
 def hazards():
-    randnum = random.randint(0, 1000)
+    global WIND, SNOWING, TYPHOON, EARTHQUAKE
+    randnum = random.randint(1, 2000)
     if randnum <= 1:
-        if not WIND[0] and not SNOWING[0]:
-            WIND[0] = True
-            WIND[1] = random.choice(["Left", "Right"])
+        WIND[0] = True
+        WIND[1] = random.choice(["Left", "Right"])
     elif randnum <= 2:
-        if not WIND[0] and not SNOWING[0]:
-            SNOWING[0] = True
-
+        SNOWING[0] = True
+    elif randnum <= 3:
+        TYPHOON[0] = True
+    elif randnum <= 4:
+        EARTHQUAKE = True
 def main():
     # Initialize pygame
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
