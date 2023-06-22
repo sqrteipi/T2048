@@ -248,10 +248,11 @@ class Tetris:
                 del self.grid[i]
                 self.grid.insert(0, [0 for _ in range(self.width)])
         return lines_cleared
-    def clear_vertical(self):
-        random_ver = random.randint(0, WIDTH // 25)
-        for i in range(HEIGHT // 25):
-            self.grid[i][random_ver-1] = 0
+    def random_disappear(self):
+        for i in range(HEIGHT//25-3, HEIGHT//25):
+            for _ in range(5):
+                random_ver = random.randint(0, WIDTH // 25)
+                self.grid[i][random_ver-1] = 0
     def lock_piece(self, piece):
         """Lock the piece in place and create a new piece"""
         for i, row in enumerate(piece.shape[piece.rotation % len(piece.shape)]):
@@ -350,8 +351,7 @@ class Tetris:
 
             '''EARTHQUAKE Function'''
             if EARTHQUAKE:
-                for _ in range(2):
-                    self.clear_vertical()
+                self.random_disappear()
                 EARTHQUAKE = not EARTHQUAKE
 
 
