@@ -1,7 +1,6 @@
 import sys
 import pygame
 import random
-
 pygame.init()
 
 # Screen dimensions
@@ -15,7 +14,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 COLORS = [RED, BLUE, GREEN]
-
+GRAVITY = 10
 # Tetromino shapes
 SHAPES = [
     [
@@ -186,8 +185,11 @@ class Tetris:
         """Lock the piece in place and create a new piece"""
         for i, row in enumerate(piece.shape[piece.rotation % len(piece.shape)]):
             for j, cell in enumerate(row):
-                if cell == 'O':
-                    self.grid[piece.y + i][piece.x + j] = piece.color
+                try:
+                    if cell == 'O':
+                        self.grid[piece.y + i][piece.x + j] = piece.color
+                except:
+                    pass
         # Clear the lines and update the score
         lines_cleared = self.clear_lines()
         self.score += lines_cleared * 100  # Update the score based on the number of cleared lines
@@ -242,8 +244,9 @@ def main():
     clock = pygame.time.Clock()
     # Create a Tetris object
     game = Tetris(WIDTH // GRID_SIZE, HEIGHT // GRID_SIZE)
+    keys = pygame.key.get_pressed()
     fall_time = 0
-    fall_speed = 50  # You can adjust this value to change the falling speed, it's in milliseconds
+    fall_speed = 10  # You can adjust this value to change the falling speed, it's in milliseconds
     while True:
         # Fill the screen with black
         screen.fill(BLACK)
@@ -287,10 +290,9 @@ def main():
             # Draw the "Game Over" message
             draw_game_over(screen, WIDTH // 2 - 100, HEIGHT // 2 - 30)  # Draw the "Game Over" message
             # You can add a "Press any key to restart" message here
-            # Check for the KEYDOWN event
             if event.type == pygame.KEYDOWN:
-                # Create a new Tetris object
                 game = Tetris(WIDTH // GRID_SIZE, HEIGHT // GRID_SIZE)
+            # Check for the KEYDOWN event
         # Update the display
         pygame.display.flip()
         # Set the framerate
