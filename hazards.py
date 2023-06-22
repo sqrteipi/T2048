@@ -152,7 +152,13 @@ class Tetromino:
         self.color = random.choice(COLORS) # You can choose different colors for each shape
         self.rotation = 0
 
-
+class Snow_tetromino:
+    def __init__(self, x, y, shape):
+        self.x = x
+        self.y = y
+        self.shape = shape
+        self.color = WHITE # You can choose different colors for each shape
+        self.rotation = 0
 class Tetris:
     def __init__(self, width, height):
         self.width = width
@@ -220,7 +226,7 @@ class Tetris:
                  "....."]]
         x = random.randint(0, self.width)
         y = 0
-        return Tetromino(x, y, shape)
+        return Snow_tetromino(x, y, shape)
 
     def valid_move(self, piece, x, y, rotation):
         """Check if the piece can move to the given position"""
@@ -396,6 +402,8 @@ def hazards():
         TYPHOON[0] = True
     elif randnum <= 4:
         EARTHQUAKE = True
+
+
 def main():
     # Initialize pygame
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
